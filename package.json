@@ -1,0 +1,39 @@
+{
+  "name": "scello-be",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon --watch ./src --ext ts --exec ts-node ./src/index.ts",
+    "sequelize:init": "npx sequelize-cli init",
+    "sequelize:migrate": "ts-node -O '{\"module\":\"CommonJS\"}' node_modules/.bin/sequelize-cli db:migrate",
+    "sequelize:migrate:undo": "ts-node -O '{\"module\":\"CommonJS\"}' node_modules/.bin/sequelize-cli db:migrate:undo",
+    "sequelize:seed": "npx sequelize-cli db:seed:all",
+    "sequelize:seed:undo": "npx sequelize-cli db:seed:undo:all",
+    "sequelize:model": "npx sequelize-cli model:generate --name",
+    "sequelize:migration": "npx sequelize-cli migration:generate --name",
+    "sequelize:seed:generate": "npx sequelize-cli seed:generate --name",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "pg": "^8.13.1",
+    "sequelize": "^6.37.5"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.10",
+    "nodemon": "^3.1.9",
+    "sequelize-cli": "^6.6.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}
