@@ -1,7 +1,6 @@
 import express from 'express';
 import { UserController } from '../controllers/user.controller';
 import authMiddleware from '../middleware/authMiddleware';
-import roleMiddleware from '../middleware/roleMiddleware';
 
 const router = express.Router();
 const userController = new UserController();
@@ -9,7 +8,7 @@ const userController = new UserController();
 /**
  * @swagger
  * tags:
- *   name: Users
+ *   name: Auth
  *   description: API endpoints to manage users
  */
 

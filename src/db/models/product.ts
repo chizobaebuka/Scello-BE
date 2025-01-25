@@ -1,13 +1,19 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../../config/sequelize';
 
+export enum ProductCategoryEnum {
+  Electronics = 'Electronics',
+  Clothing = 'Clothing',
+  Home = 'Home',
+}
+
 class Product extends Model {
   public id!: number;
   public name!: string;
   public price!: number;
   public description!: string;
   public stock_quantity!: number;
-  public category!: string;
+  public category!: ProductCategoryEnum;
   public created_at!: Date;
   public updated_at!: Date;
 }
@@ -37,7 +43,7 @@ Product.init(
       allowNull: false,
     },
     category: {
-      type: DataTypes.STRING,
+      type: DataTypes.ENUM(...Object.values(ProductCategoryEnum)),
       allowNull: false,
     },
   },

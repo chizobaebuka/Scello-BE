@@ -1,7 +1,7 @@
 import swaggerJSDoc from 'swagger-jsdoc';
 
 const swaggerDefinition = {
-    openapi: '3.0.0',
+    swagger: '2.0',
     info: {
         title: 'Scelloo Backend Assessment - E-Commerce API',
         version: '1.0.0',
@@ -16,15 +16,25 @@ const swaggerDefinition = {
     paths: {
         '/api/v1/users/create': {
             post: {
-                tags: ['Users'],
                 summary: 'Create a new user',
                 description: 'Create a new user in the system',
+                tags: ['Auth'],
+                parameters: [
+                    {
+                        in: 'body',
+                        name: 'user',
+                        description: 'User details for signing up',
+                        required: true,
+                        schema: {
+                            $ref: '#/components/schemas/UserCreate',
+                        },
+                    },
+                ],
                 requestBody: {
-                    required: true,
                     content: {
                         'application/json': {
                             schema: {
-                                $ref: '#/components/schemas/UserCreate',
+                                $ref: '#/components/schemas/User',
                             },
                         },
                     },
@@ -46,9 +56,51 @@ const swaggerDefinition = {
                 },
             },
         },
+        '/api/v1/users/login': {
+            post: {
+                tags: ['Auth'],
+                summary: 'Login a user',
+                description: 'Authenticate a user with their email and password',
+                parameters: [
+                    {
+                        in: 'body',
+                        name: 'user',
+                        description: 'User details for logging in',
+                        required: true,
+                        schema: {
+                            $ref: '#/components/schemas/UserLogin',
+                        },
+                    },
+                ],
+                requestBody: {
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/User',
+                            },
+                        },
+                    },
+                },
+                responses: {
+                    201: {
+                        description: 'User authenticated successfully',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: '#/components/schemas/User',
+                                },
+                            },
+                        },
+                    },
+                    401: {
+                        description: 'Invalid email or password',
+                    },
+                },
+            },
+        },
         '/api/v1/users': {
             get: {
-                tags: ['Users'],
+                tags: ['Auth'],
                 summary: 'Get all users',
                 description: 'Fetch all users with pagination, search, filtering, and sorting options',
                 parameters: [
@@ -112,9 +164,7 @@ const swaggerDefinition = {
                         },
                     },
                 ],
-                security: {
-                    JWTAuth: []
-                },
+                security: [{ JWTAuth: [] }],
                 responses: {
                     200: {
                         description: 'Users fetched successfully',
@@ -144,7 +194,7 @@ const swaggerDefinition = {
         },
         '/api/v1/users/{id}': {
             get: {
-                tags: ['Users'],
+                tags: ['Auth'],
                 summary: 'Get a user by ID',
                 description: 'Fetch a user by their ID',
                 parameters: [
@@ -158,9 +208,7 @@ const swaggerDefinition = {
                         },
                     },
                 ],
-                security: {
-                    JWTAuth: []
-                },
+                security: [{ JWTAuth: [] }],
                 responses: {
                     200: {
                         description: 'User fetched successfully',
@@ -184,36 +232,64 @@ const swaggerDefinition = {
                 },
             },
             put: {
-                tags: ['Users'],
+                tags: ['Auth'],
                 summary: 'Update a user by ID',
                 description: 'Update a user by their ID',
                 parameters: [
                     {
-                        name: 'id',
                         in: 'path',
+                        name: 'id',
                         description: 'User ID',
                         required: true,
                         schema: {
                             type: 'string',
                         },
                     },
+                    {
+                        in: 'body',
+                        name: 'user',
+                        description: 'Details to update the user',
+                        required: true,
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                name: { type:'string' },
+                                email: { type:'string', format: 'email' },
+                                password: { type:'string', minLength: 6 },
+                                role: { type:'string', enum: ['user', 'admin'] },
+                            },
+                            optional: ['name', 'email', 'password', 'role'],
+                        }
+                    }
                 ],
-                requestBody: {
-                    required: true,
-                    content: {
-                        'application/json': {
-                            schema: {
-                                $ref: '#/components/schemas/UserUpdate',
+                security: [{ JWTAuth: [] }],
+                responses: {
+                    200: {
+                        description: 'User updated successfully',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: '#/components/schemas/User',
+                                },
                             },
                         },
                     },
-                },
-                security: {
-                    JWTAuth: []
-                },
+                    400: {
+                        description: 'Invalid request body',
+                    },
+                    401: {
+                        description: 'Unauthorized',
+                    },
+                    404: {
+                        description: 'User not found',
+                    },
+                    500: {
+                        description: 'Internal server error',
+                    },
+                }
             },
             delete: {
-                tags: ['Users'],
+                tags: ['Auth'],
                 summary: 'Delete a user by ID',
                 description: 'Delete a user by their ID',
                 parameters: [
@@ -227,9 +303,7 @@ const swaggerDefinition = {
                         },
                     },
                 ],
-                security: {
-                    JWTAuth: []
-                },
+                security: [{ JWTAuth: [] }],
                 responses: {
                     204: {
                         description: 'User deleted successfully',
@@ -253,8 +327,8 @@ const swaggerDefinition = {
                 description: 'Fetch all products with pagination, search, filtering, and sorting options',
                 parameters: [
                     {
-                        name: 'page',
                         in: 'query',
+                        name: 'page',
                         description: 'Page number',
                         required: false,
                         schema: {
@@ -352,11 +426,8 @@ const swaggerDefinition = {
                         },
                     },
                 ],
-                security: {
-                    JWTAuth: []
-                },
+                security: [{ JWTAuth: [] }],
                 requestBody: {
-                    required: false,
                     content: {
                         'application/json': {
                             schema: {
@@ -371,7 +442,7 @@ const swaggerDefinition = {
                                     startDate: { type:'string', format: 'date-time' },
                                     endDate: { type:'string', format: 'date-time' },
                                 },
-                                required: [],
+                                optional: [],
                             },
                         },
                     },
@@ -408,11 +479,27 @@ const swaggerDefinition = {
                 tags: ['Products'],
                 summary: 'Create a product',
                 description: 'Create a new product',
-                security: {
-                    JWTAuth: []
-                },
+                security: [{ JWTAuth: [] }],
+                parameters: [
+                    {
+                        in: 'body',
+                        name: 'product',
+                        description: 'Product data',
+                        required: true,
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                name: { type:'string' },
+                                description: { type:'string' },
+                                price: { type: 'number' },
+                                category: { type:'string' },
+                                stock_quantity: { type: 'integer' },
+                            },
+                            required: ['name', 'description', 'price', 'category', 'stock_quantity'],
+                        }
+                    }
+                ],
                 requestBody: {
-                    required: true,
                     content: {
                         'application/json': {
                             schema: {
@@ -444,14 +531,14 @@ const swaggerDefinition = {
                 },
             },
         },
-        '/api/v1/products/{productId}': {
+        '/api/v1/products/{id}': {
             get: {
                 tags: ['Products'],
                 summary: 'Get a single product',
                 description: 'Fetch a single product by ID',
                 parameters: [
                     {
-                        name: 'productId',
+                        name: 'id',
                         in: 'path',
                         description: 'Product ID',
                         required: true,
@@ -460,9 +547,7 @@ const swaggerDefinition = {
                         },
                     },
                 ],
-                security: {
-                    JWTAuth: []
-                },
+                security: [{ JWTAuth: [] }],
                 responses: {
                     200: {
                         description: 'Product fetched successfully',
@@ -491,7 +576,7 @@ const swaggerDefinition = {
                 description: 'Update an existing product by ID',
                 parameters: [
                     {
-                        name: 'productId',
+                        name: 'id',
                         in: 'path',
                         description: 'Product ID',
                         required: true,
@@ -499,16 +584,30 @@ const swaggerDefinition = {
                             type: 'string',
                         },
                     },
+                    {
+                        in: 'body',
+                        name: 'product',
+                        description: 'Details to update the product',
+                        required: true,
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                name: { type:'string' },
+                                description: { type:'string' },
+                                price: { type: 'number' },
+                                category: { type:'string' },
+                                stock_quantity: { type: 'integer' },
+                            },
+                            optional: ['name', 'description', 'price', 'category', 'stock_quantity'],
+                        }
+                    }
                 ],
-                security: {
-                    JWTAuth: []
-                },
+                security: [{ JWTAuth: [] }],
                 requestBody: {
-                    required: true,
                     content: {
                         'application/json': {
                             schema: {
-                                $ref: '#/components/schemas/ProductUpdate',
+                                $ref: '#/components/schemas/Product',
                             },
                         },
                     },
@@ -544,7 +643,7 @@ const swaggerDefinition = {
                 description: 'Delete an existing product by ID',
                 parameters: [
                     {
-                        name: 'productId',
+                        name: 'id',
                         in: 'path',
                         description: 'Product ID',
                         required: true,
@@ -553,9 +652,7 @@ const swaggerDefinition = {
                         },
                     },
                 ],
-                security: {
-                    JWTAuth: []
-                },
+                security: [{ JWTAuth: [] }],
                 responses: {
                     200: {
                         description: 'Product deleted successfully',
@@ -591,8 +688,8 @@ const swaggerDefinition = {
                     description: { type: 'string', example: 'A high-end gaming laptop.' },
                     stockQuantity: { type: 'integer', example: 50 },
                     category: { type: 'string', example: 'Electronics' },
-                    createdAt: { type: 'string', format: 'date-time' },
-                    updatedAt: { type: 'string', format: 'date-time' },
+                    created_at: { type: 'string', format: 'date-time' },
+                    updated_at: { type: 'string', format: 'date-time' },
                 },
                 required: ['name', 'price', 'description', 'stockQuantity', 'category'],
             },
@@ -627,12 +724,20 @@ const swaggerDefinition = {
                     role: { type:'string', enum: ['user', 'admin'], example: 'admin', description: 'The role of the user (optional, can be either "user" or "admin")' },
                 },
                 optional: ['name', 'email', 'password', 'role'],
+            },
+            UserLogin: {
+                type: 'object',
+                properties: {
+                    email: { type:'string', example: 'john.doe@example.com', format: 'email' },
+                    password: { type:'string', example: 'password123' },
+                },
+                required: ['email', 'password'],
             }
         },
     },
     tags: [
         { name: 'Products', description: 'Product management' },
-        { name: 'Users', description: 'User authentication and authorization' },
+        { name: 'Auth', description: 'User authentication and authorization' },
     ],
 };
 
