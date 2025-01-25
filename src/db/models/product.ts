@@ -6,19 +6,19 @@ class Product extends Model {
   public name!: string;
   public price!: number;
   public description!: string;
-  public stockQuantity!: number;
+  public stock_quantity!: number;
   public category!: string;
-  public createdAt!: Date;
-  public updatedAt!: Date;
+  public created_at!: Date;
+  public updated_at!: Date;
 }
 
 Product.init(
   {
     id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
       allowNull: false,
+      primaryKey: true,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
     },
     name: {
       type: DataTypes.STRING,
@@ -32,7 +32,7 @@ Product.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    stockQuantity: {
+    stock_quantity: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -43,8 +43,10 @@ Product.init(
   },
   {
     sequelize,
-    tableName: 'products',
+    tableName: 'Products',
     timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
   }
 );
 
