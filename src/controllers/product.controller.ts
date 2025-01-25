@@ -30,7 +30,7 @@ export class ProductController {
                 category,
                 minPrice,
                 maxPrice,
-                sortBy = 'createdAt',
+                sortBy = 'created_at',
                 sortOrder = 'DESC',
                 startDate,
                 endDate,
@@ -44,6 +44,8 @@ export class ProductController {
                 category: category as string,
                 minPrice: minPrice ? parseFloat(minPrice as string) : undefined,
                 maxPrice: maxPrice ? parseFloat(maxPrice as string) : undefined,
+                sortBy: sortBy as string,
+                sortOrder: sortOrder as 'ASC' | 'DESC',
                 startDate: startDate ? new Date(startDate as string) : undefined,
                 endDate: endDate ? new Date(endDate as string) : undefined,
             };

@@ -1,5 +1,5 @@
 
-import { Op } from 'sequelize';
+import { Op, Order } from 'sequelize';
 import Product from '../db/models/product';
 import { IProductCreate, IProductUpdate, ProductFilters } from '../interfaces';
 
@@ -9,7 +9,7 @@ export class ProductRepository {
     }
 
     async getAllProducts(filters: ProductFilters) {
-        const { page, pageSize, search, category, minPrice, maxPrice, startDate, endDate,} = filters;
+        const { page, pageSize, search, category, minPrice, maxPrice, sortBy, sortOrder, startDate, endDate,} = filters;
     
         const whereConditions: any = {
             name: {
@@ -21,11 +21,14 @@ export class ProductRepository {
             ...(startDate && { createdAt: { [Op.gte]: startDate } }),
             ...(endDate && { createdAt: { [Op.lte]: endDate } }),
         };
+
+        const order: Order = [[sortBy, sortOrder]];
     
         const options = {
             where: whereConditions,
             limit: pageSize,
             offset: (page - 1) * pageSize,
+            order,
         };
     
         try {

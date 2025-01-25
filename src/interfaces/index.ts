@@ -13,6 +13,8 @@ export interface ProductFilters {
     category?: string;
     minPrice?: number;
     maxPrice?: number;
+    sortBy: string;
+    sortOrder: 'ASC' | 'DESC';
     startDate?: Date;  
     endDate?: Date; 
 }
