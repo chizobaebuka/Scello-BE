@@ -6,6 +6,7 @@ import productRouter from './routes/product.route';
 import userRouter from './routes/user.route';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from "./swagger";
+import { apiLimiter, errorHandler } from './utils';
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(errorHandler)
 
 // Test database connection 
 connectDB()
@@ -29,8 +31,8 @@ app.get('/', (req, res) => {
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routing 
-app.use('/api/v1/products', productRouter);
-app.use('/api/v1/users', userRouter);
+app.use('/api/v1/products', apiLimiter, productRouter);
+app.use('/api/v1/users', apiLimiter, userRouter);
 
 // Start the server
 const PORT = process.env.PORT ?? 3000;
